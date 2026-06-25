@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collectif Clauses — Métropole Rouen Normandie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rouge:    #D72B2B;
+      --marine:   #1B2A6B;
+      --vert:     #2E8B57;
+      --orange:   #E87722;
+      --violet:   #7B3FA0;
+      --creme:    #F7F5F0;
+      --texte:    #1A1A2E;
+      --gris:     #6B7280;
+      --blanc:    #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--texte); background: var(--blanc); }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--marine);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 68px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo svg { width: 48px; height: 48px; border-radius: 50%; }
+    .nav-logo span { color: var(--blanc); font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: rgba(255,255,255,.85); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--blanc); }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--rouge);
+      padding: 80px 5vw 72px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 1px, transparent 40px);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.18); color: var(--blanc);
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 999px; padding: 5px 18px;
+      font-size: .8rem; font-weight: 600; letter-spacing: .05em;
+      margin-bottom: 28px; text-transform: uppercase;
+      position: relative; z-index: 1;
+    }
+    .hero h1 {
+      font-family: 'Sora', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--blanc); font-weight: 800; line-height: 1.15;
+      max-width: 700px; margin: 0 auto 20px;
+      position: relative; z-index: 1;
+    }
+    .hero p {
+      color: rgba(255,255,255,.88); font-size: 1.05rem; max-width: 620px;
+      margin: 0 auto 36px; line-height: 1.7;
+      position: relative; z-index: 1;
+    }
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      position: relative; z-index: 1;
+    }
+    .logo-hero {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--marine) 0%, var(--violet) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blanc); font-size: 80px; font-weight: 700;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .btn-hero {
+      display: inline-block; background: var(--blanc); color: var(--rouge);
+      padding: 14px 36px; border-radius: 6px;
+      font-weight: 700; font-size: 1rem; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    }
+    .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+
+    /* ── PILLIERS ── */
+    .pilliers {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .pillier {
+      padding: 28px 20px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .pillier:nth-child(1) { background: var(--marine); }
+    .pillier:nth-child(2) { background: var(--vert); }
+    .pillier:nth-child(3) { background: var(--orange); }
+    .pillier:nth-child(4) { background: var(--violet); }
+    .pillier svg { opacity: .9; }
+    .pillier span { color: var(--blanc); font-weight: 600; font-size: .95rem; }
+
+    /* ── SECTION COMMUNE ── */
+    section { padding: 72px 5vw; }
+    .section-label { color: var(--rouge); font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+    .section-title { font-family: 'Sora', sans-serif; font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--marine); font-weight: 800; margin-bottom: 40px; }
+
+    /* ── QUI SOMMES-NOUS ── */
+    #qui { background: var(--creme); }
+    .qui-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .qui-text p { color: #444; line-height: 1.8; margin-bottom: 16px; font-size: .97rem; }
+    .qui-logo-wrap { display: flex; justify-content: center; }
+    .logo-qui {
+      width: 280px; height: 280px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--rouge) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blanc); font-size: 120px; font-weight: 700;
+      box-shadow: 0 8px 40px rgba(27,42,107,.15);
+    }
+    .structures { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .tag {
+      padding: 6px 14px; border-radius: 4px; font-size: .8rem; font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .tag-rouge  { background: #FEE2E2; color: var(--rouge); }
+    .tag-marine { background: #E0E7FF; color: var(--marine); }
+    .tag-vert   { background: #D1FAE5; color: var(--vert); }
+    .tag-violet { background: #EDE9FE; color: var(--violet); }
+
+    /* ── PARCOURS ── */
+    #parcours { background: var(--blanc); }
+    .parcours-list { display: flex; flex-direction: column; gap: 0; }
+    .parcours-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 22px 0; border-bottom: 1px solid #F0EDE8;
+    }
+    .parcours-item:last-child { border-bottom: none; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .dot-rouge  { background: var(--rouge); }
+    .dot-vert   { background: var(--vert); }
+    .dot-orange { background: var(--orange); }
+    .dot-violet { background: var(--violet); }
+    .dot-marine { background: var(--marine); }
+    .parcours-item p { font-size: .95rem; line-height: 1.7; color: #374151; }
+    .badge-qpv {
+      display: inline-block; background: #F3F4F6; color: var(--marine);
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      padding: 1px 8px; font-size: .75rem; font-weight: 600; margin: 0 2px;
+    }
+    .badge-struct {
+      display: inline-block; background: #EDE9FE; color: var(--violet);
+      border-radius: 4px; padding: 1px 8px; font-size: .75rem; font-weight: 600; margin: 0 2px;
+    }
+    .badge-cdi {
+      display: inline-block; background: #D1FAE5; color: var(--vert);
+      border-radius: 4px; padding: 1px 8px; font-size: .8rem; font-weight: 700; margin: 0 2px;
+    }
+
+    /* ── CHIFFRES ── */
+    #chiffres { background: var(--creme); }
+    .chiffres-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .chiffre-card {
+      background: var(--blanc); border-radius: 10px;
+      padding: 36px 24px; text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      border-top: 4px solid var(--rouge);
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .chiffre-card canvas { max-height: 350px; }
+    .chiffre-label { font-size: .9rem; color: var(--gris); line-height: 1.5; margin-top: 20px; font-weight: 600; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--marine); text-align: center; }
+    #contact .section-label { color: rgba(255,255,255,.6); }
+    #contact .section-title { color: var(--blanc); margin-bottom: 16px; }
+    #contact p { color: rgba(255,255,255,.75); margin-bottom: 32px; font-size: .97rem; }
+    .btn-contact {
+      display: inline-block; background: var(--rouge); color: var(--blanc);
+      padding: 14px 40px; border-radius: 6px; font-weight: 700;
+      text-decoration: none; transition: background .2s;
+    }
+    .btn-contact:hover { background: #b91c1c; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #111827; color: rgba(255,255,255,.55);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 5vw; font-size: .82rem; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-tags { display: flex; gap: 8px; }
+    .footer-tag {
+      background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
+      padding: 4px 12px; border-radius: 4px; font-size: .75rem; font-weight: 600;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .pilliers { grid-template-columns: repeat(2, 1fr); }
+      .qui-grid { grid-template-columns: 1fr; }
+      .chiffres-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" fill="#D72B2B"/>
+      <text x="50" y="60" font-size="50" font-weight="bold" fill="white" text-anchor="middle" font-family="Sora">CC</text>
+    </svg>
+    <span>Collectif Clauses</span>
+  </a>
+  <div class="nav-links">
+    <a href="#qui">Qui sommes-nous</a>
+    <a href="#parcours">Parcours</a>
+    <a href="#chiffres">Chiffres</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="logo-hero">CC</div>
+    <h1>Construisons, ensemble,<br>des parcours de réussite&nbsp;!</h1>
+    <p>Le Collectif Clauses réunit les acteurs historiques de l'insertion et de l'emploi pour répondre aux exigences des clauses d'insertion.</p>
+    <a href="#parcours" class="btn-hero">Découvrir nos solutions</a>
+  </div>
+</div>
+
+<!-- PILLIERS -->
+<div class="pilliers">
+  <div class="pillier">
+    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="1.8"/></svg>
+    <span>Recrutement</span>
+  </div>
+  <div class="pillier">
+    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <span>Formation</span>
+  </div>
+  <div class="pillier">
+    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Parcours</span>
+  </div>
+  <div class="pillier">
+    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Qualification</span>
+  </div>
+</div>
+
+<!-- QUI SOMMES-NOUS -->
+<section id="qui">
+  <div class="qui-grid">
+    <div class="qui-text">
+      <div class="section-label">Notre collectif</div>
+      <h2 class="section-title">Qui sommes-nous ?</h2>
+      <p>Le Collectif Clauses réunit les acteurs historiques de l'insertion et de l'emploi du BTP sur le territoire de la Métropole Rouen Normandie.</p>
+      <p>Ensemble, nous proposons aux entreprises une réponse coordonnée, réactive et sécurisée pour répondre aux exigences des clauses d'insertion. Recrutement, accompagnement, formation, suivi professionnel et insertion durable sont nos domaines d'expertise.</p>
+      <p>Un interlocuteur engagé, des solutions concrètes et une parfaite connaissance du terrain au service de vos besoins.</p>
+      <div class="structures">
+        <span class="tag tag-rouge">ETTI</span>
+        <span class="tag tag-marine">GEIQ</span>
+        <span class="tag tag-vert">GE</span>
+        <span class="tag tag-violet">IAE</span>
+      </div>
+    </div>
+    <div class="qui-logo-wrap">
+      <div class="logo-qui">CC</div>
+    </div>
+  </div>
+</section>
+
+<!-- PARCOURS -->
+<section id="parcours">
+  <div class="section-label">Témoignages</div>
+  <h2 class="section-title">Les parcours</h2>
+  <div class="parcours-list">
+
+    <div class="parcours-item">
+      <div class="dot dot-rouge"></div>
+      <p>M. M.A., DELD du <span class="badge-qpv">QPV Piscine à Petit-Quevilly</span>, commence un parcours avec <span class="badge-struct">ASCI</span>, mis à disposition de l'entreprise L'Hotellerie. Obtient rapidement un contrat en <span class="badge-cdi">CDI</span>.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-vert"></div>
+      <p>M. A.A. du <span class="badge-qpv">QPV Château Blanc — Saint-Étienne-du-Rouvray</span>, accompagné par la MIEF, France Terre d'Asile puis <span class="badge-struct">AIDSA</span>. En mission longue avec une entreprise partenaire.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-orange"></div>
+      <p>Mr J.F. (<span class="badge-qpv">QPV St Julien — Petit-Quevilly</span>), reprise de parcours avec <span class="badge-struct">Humando</span> après des problèmes de santé. À 43 ans, signe un <span class="badge-cdi">CDI</span> comme maçon.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-violet"></div>
+      <p>Mr H.B. du <span class="badge-qpv">QPV Plateau — Canteleu</span>. Travaille avec <span class="badge-struct">Id'ées Intérim</span> sur le chantier de l'école de son quartier, poursuit son parcours en insertion.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-marine"></div>
+      <p>M. C.B. du <span class="badge-qpv">QPV Arts Fleurs Feugrais — Cléon</span>. Travaille avec <span class="badge-struct">Humando</span> sur différents chantiers : CHU, St Julien, Pont Flaubert.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-rouge"></div>
+      <p>M. B. du <span class="badge-qpv">Plateau — Canteleu</span>. Passage code et permis, CAP électricien. Missions avec l'ETTI <span class="badge-struct">E2I</span> entre 2022 et 2024. Recrutement en <span class="badge-cdi">CDI</span> en 2025.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-vert"></div>
+      <p>Mme L. de <span class="badge-qpv">Saint-Étienne-du-Rouvray</span>, accompagnée par la MIEF. CDDI à ABBEI puis parcours avec <span class="badge-struct">Alezi</span> en intérim d'insertion.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-orange"></div>
+      <p>Mr M., né au Togo, 45 ans. <span class="badge-struct">Contrat de professionnalisation GEIQ BTP</span> — mise à disposition comme coffreur bancheur sur un chantier de Rouen.</p>
+    </div>
+
+    <div class="parcours-item">
+      <div class="dot dot-violet"></div>
+      <p>M. A.K., réfugié syrien, bénéficiaire du RSA. Recruté en insertion avec <span class="badge-struct">Humando</span> sur le chantier de Darnétal, puis <span class="badge-cdi">CDI</span> avec l'entreprise.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CHIFFRES -->
+<section id="chiffres">
+  <div class="section-label">Impact 2025</div>
+  <h2 class="section-title">Quelques chiffres</h2>
+  <div class="chiffres-grid">
+    <div class="chiffre-card">
+      <div style="position: relative; height: 300px;">
+        <canvas id="chartHeures"></canvas>
+      </div>
+      <div class="chiffre-label">Heures de clause d'insertion réalisées en 2025 sur la Métropole de Rouen</div>
+    </div>
+    <div class="chiffre-card">
+      <div style="position: relative; height: 300px;">
+        <canvas id="chartSalaries"></canvas>
+      </div>
+      <div class="chiffre-label">Salariés en insertion mobilisés sur les clauses en 2025 sur la Métropole de Rouen</div>
+    </div>
+    <div class="chiffre-card">
+      <div style="position: relative; height: 300px;">
+        <canvas id="chartSorties"></canvas>
+      </div>
+      <div class="chiffre-label">Répartition des sorties en 2025 par type (sortie positive en %)</div>
+    </div>
+    <div class="chiffre-card">
+      <div style="position: relative; height: 300px;">
+        <canvas id="chartOrigine"></canvas>
+      </div>
+      <div class="chiffre-label">Origine géographique des personnes en contrats en 2025</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Nous rejoindre</div>
+  <h2 class="section-title">Parlons de vos clauses</h2>
+  <p>Vous êtes une entreprise du BTP soumise à des clauses d'insertion ?<br>Contactez le Collectif Clauses pour une réponse coordonnée et sécurisée.</p>
+  <a href="mailto:contact@collectifclauses.fr" class="btn-contact">Nous contacter</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Collectif Clauses — Rouen Normandie</span>
+  <div class="footer-tags">
+    <span class="footer-tag">ETTI</span>
+    <span class="footer-tag">GEIQ</span>
+    <span class="footer-tag">IAE</span>
+  </div>
+</footer>
+
+<script>
+  // Charts Configuration
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { font: { size: 12 }, padding: 15 }
+      }
+    }
+  };
+
+  // Chart 1: Heures d'insertion
+  const ctx1 = document.getElementById('chartHeures').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Total heures 2025'],
+      datasets: [{
+        label: 'Heures réalisées',
+        data: [206221],
+        backgroundColor: '#7B3FA0',
+        borderColor: '#7B3FA0',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      ...chartOptions,
+      scales: {
+        y: { beginAtZero: true, max: 250000 }
+      }
+    }
+  });
+
+  // Chart 2: Salariés mobilisés
+  const ctx2 = document.getElementById('chartSalaries').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['Total salariés 2025'],
+      datasets: [{
+        label: 'Salariés en insertion',
+        data: [594],
+        backgroundColor: '#1B2A6B',
+        borderColor: '#1B2A6B',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      ...chartOptions,
+      scales: {
+        y: { beginAtZero: true, max: 700 }
+      }
+    }
+  });
+
+  // Chart 3: Sorties positives
+  const ctx3 = document.getElementById('chartSorties').getContext('2d');
+  new Chart(ctx3, {
+    type: 'doughnut',
+    data: {
+      labels: ['CDI', 'CDD', 'Contrat pro', 'Autre', 'Autres sorties'],
+      datasets: [{
+        data: [12, 20, 8, 5, 55],
+        backgroundColor: ['#D72B2B', '#E87722', '#2E8B57', '#7B3FA0', '#6B7280']
+      }]
+    },
+    options: chartOptions
+  });
+
+  // Chart 4: Origine géographique
+  const ctx4 = document.getElementById('chartOrigine').getContext('2d');
+  new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: ['QPV', 'Hors QPV'],
+      datasets: [{
+        label: 'Proportion (%)',
+        data: [70, 30],
+        backgroundColor: ['#E87722', '#D4AF9D']
+      }]
+    },
+    options: {
+      ...chartOptions,
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
